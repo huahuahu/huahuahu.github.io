@@ -1,13 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-24T22:54:21+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-24T22:58:01+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
 </subtitle><entry><title type="html">Welcome To Jekyll</title><link href="http://localhost:4000/2017/02/24/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome To Jekyll" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/2017/02/24/welcome-to-jekyll.html">&lt;h1 id=&quot;swift和objective-c关于字符串的一个小特性&quot;&gt;Swift和Objective C关于字符串的一个小特性&lt;/h1&gt;
-&lt;p&gt;##一、Unicode的一个小特性
-首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。
+
+&lt;p&gt;##一、Unicode的一个小特性&lt;/p&gt;
+
+&lt;p&gt;首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。
 反过来，不是每一个字符都对应一个code point，每一个字符也不止有一个code point的表示方法。
 比如说，“🐯”这个emoji表情对应的code point是“\ud83d\udc2f\u000d\u000a”，由4个code point组成，而不是一个。
 “é”这个字符对应的code point有两个，“\u00e9”以及“\u0065\u0301”这两个code point序列（一个或多个code point）均可表示这个字符。
 那么如何比较两个字符串是否相同呢？Unicode规定了&lt;a href=&quot;http://www.unicode.org/reports/tr15/&quot;&gt;正规化的方法&lt;/a&gt;，要把code point的序列正规化，然后判断是否一致。
-下面我们看下Swift和NSString对这个规则的支持情况。
-##二、Objective C中的字符串&lt;/p&gt;
+下面我们看下Swift和NSString对这个规则的支持情况。&lt;/p&gt;
+
+&lt;p&gt;##二、Objective C中的字符串&lt;/p&gt;
 &lt;blockquote&gt;
   &lt;p&gt;An NSString object encodes a Unicode-compliant text string, represented as a sequence of UTF–16 code units&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -39,9 +42,14 @@
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;str1: é, length 1;
 str2: é, length 2;
-str1 equal to str2 no ##三、Swift中的字符串 &amp;gt; A string is a series of characters 
+str1 equal to str2 no
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;p&gt;##三、Swift中的字符串&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;A string is a series of characters&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;p&gt;在Swift关于String的文档中，第一句话就是字符串是字符的序列，而不是code unit的序列。String有一个&lt;code class=&quot;highlighter-rouge&quot;&gt;characters&lt;/code&gt;的属性，是字符的集合。&lt;/p&gt;
 
@@ -64,4 +72,4 @@ str1 equal to str2 no ##三、Swift中的字符串 &amp;gt; A string is a series
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;str1 is equal to str2 true
 &lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html">Swift和Objective C关于字符串的一个小特性 ##一、Unicode的一个小特性 首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。 反过来，不是每一个字符都对应一个code point，每一个字符也不止有一个code point的表示方法。 比如说，“🐯”这个emoji表情对应的code point是“\ud83d\udc2f\u000d\u000a”，由4个code point组成，而不是一个。 “é”这个字符对应的code point有两个，“\u00e9”以及“\u0065\u0301”这两个code point序列（一个或多个code point）均可表示这个字符。 那么如何比较两个字符串是否相同呢？Unicode规定了正规化的方法，要把code point的序列正规化，然后判断是否一致。 下面我们看下Swift和NSString对这个规则的支持情况。 ##二、Objective C中的字符串 An NSString object encodes a Unicode-compliant text string, represented as a sequence of UTF–16 code units</summary></entry></feed>
+&lt;/div&gt;</content><author><name></name></author><summary type="html">Swift和Objective C关于字符串的一个小特性</summary></entry></feed>
