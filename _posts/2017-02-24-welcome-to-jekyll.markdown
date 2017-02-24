@@ -1,6 +1,6 @@
 # Swift和Objective C关于字符串的一个小特性
 
-##一、Unicode的一个小特性  
+## 一、Unicode的一个小特性  
 
 首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。
 反过来，不是每一个字符都对应一个code point，每一个字符也不止有一个code point的表示方法。
@@ -9,7 +9,7 @@
 那么如何比较两个字符串是否相同呢？Unicode规定了[正规化的方法](http://www.unicode.org/reports/tr15/)，要把code point的序列正规化，然后判断是否一致。
 下面我们看下Swift和NSString对这个规则的支持情况。
 
-##二、Objective C中的字符串
+## 二、Objective C中的字符串
 > An NSString object encodes a Unicode-compliant text string, represented as a sequence of UTF–16 code units
 
 NSString支持Unicode，一个NSString其实是UTF-16编码以后的得到的code unit序列，而`length`属性返回的是code unit序列的长度，而不是字符的长度。
@@ -40,7 +40,7 @@ NSString支持Unicode，一个NSString其实是UTF-16编码以后的得到的cod
     str2: é, length 2;
     str1 equal to str2 no
     
-##三、Swift中的字符串
+## 三、Swift中的字符串
 > A string is a series of characters 
 
 在Swift关于String的文档中，第一句话就是字符串是字符的序列，而不是code unit的序列。String有一个`characters`的属性，是字符的集合。

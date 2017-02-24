@@ -1,6 +1,6 @@
 <h1 id="swift和objective-c关于字符串的一个小特性">Swift和Objective C关于字符串的一个小特性</h1>
 
-<p>##一、Unicode的一个小特性</p>
+<h2 id="一unicode的一个小特性">一、Unicode的一个小特性</h2>
 
 <p>首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。
 反过来，不是每一个字符都对应一个code point，每一个字符也不止有一个code point的表示方法。
@@ -9,7 +9,7 @@
 那么如何比较两个字符串是否相同呢？Unicode规定了<a href="http://www.unicode.org/reports/tr15/">正规化的方法</a>，要把code point的序列正规化，然后判断是否一致。
 下面我们看下Swift和NSString对这个规则的支持情况。</p>
 
-<p>##二、Objective C中的字符串</p>
+<h2 id="二objective-c中的字符串">二、Objective C中的字符串</h2>
 <blockquote>
   <p>An NSString object encodes a Unicode-compliant text string, represented as a sequence of UTF–16 code units</p>
 </blockquote>
@@ -45,7 +45,7 @@ str1 equal to str2 no
 </code></pre>
 </div>
 
-<p>##三、Swift中的字符串</p>
+<h2 id="三swift中的字符串">三、Swift中的字符串</h2>
 <blockquote>
   <p>A string is a series of characters</p>
 </blockquote>
