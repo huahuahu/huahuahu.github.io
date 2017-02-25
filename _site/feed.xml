@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-25T08:26:13+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
-</subtitle><entry><title type="html">字符串的一个小特性</title><link href="http://localhost:4000/2017/02/24/%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html" rel="alternate" type="text/html" title="字符串的一个小特性" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7</id><content type="html" xml:base="http://localhost:4000/2017/02/24/%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html">&lt;h1 id=&quot;swift和objective-c关于字符串的一个小特性&quot;&gt;Swift和Objective C关于字符串的一个小特性&lt;/h1&gt;
-
-&lt;h2 id=&quot;一unicode的一个小特性&quot;&gt;一、Unicode的一个小特性&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-25T18:53:51+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
+</subtitle><entry><title type="html">Swift和objective c关于字符串的一个小特性</title><link href="http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective-C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html" rel="alternate" type="text/html" title="Swift和objective c关于字符串的一个小特性" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective%20C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7</id><content type="html" xml:base="http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective-C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html">&lt;h2 id=&quot;一unicode的一个小特性&quot;&gt;一、Unicode的一个小特性&lt;/h2&gt;
 
 &lt;p&gt;首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。&lt;br /&gt;
 反过来，不是每一个字符都对应一个code point，每一个字符也不止有一个code point的表示方法。
@@ -60,9 +58,11 @@ str1 equal to str2 no
 &lt;/div&gt;
 &lt;p&gt;结果如下：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;str1 is café,length is  4 ; str2 is café, stre length is 4 在比较字符串时，结果符合将code point正规化之后的结果。
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;str1 is café,length is  4 ; str2 is café, stre length is 4
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;p&gt;在比较字符串时，结果符合将code point正规化之后的结果。&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;           print(&quot;str1 is equal to str2&quot;,str1 == str2)
 &lt;/code&gt;&lt;/pre&gt;
@@ -72,4 +72,4 @@ str1 equal to str2 no
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;str1 is equal to str2 true
 &lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;</content><author><name></name></author><summary type="html">Swift和Objective C关于字符串的一个小特性</summary></entry></feed>
+&lt;/div&gt;</content><author><name></name></author><summary type="html">一、Unicode的一个小特性</summary></entry></feed>

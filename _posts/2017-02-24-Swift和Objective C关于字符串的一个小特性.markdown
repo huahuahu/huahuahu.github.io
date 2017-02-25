@@ -1,4 +1,3 @@
-# Swift和Objective C关于字符串的一个小特性
 
 ## 一、Unicode的一个小特性  
 
@@ -54,6 +53,7 @@ NSString支持Unicode，一个NSString其实是UTF-16编码以后的得到的cod
 结果如下：
 
     str1 is café,length is  4 ; str2 is café, stre length is 4
+    
 在比较字符串时，结果符合将code point正规化之后的结果。
 
 
