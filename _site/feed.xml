@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-24T23:10:33+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-25T08:26:13+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
 </subtitle><entry><title type="html">字符串的一个小特性</title><link href="http://localhost:4000/2017/02/24/%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html" rel="alternate" type="text/html" title="字符串的一个小特性" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7</id><content type="html" xml:base="http://localhost:4000/2017/02/24/%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html">&lt;h1 id=&quot;swift和objective-c关于字符串的一个小特性&quot;&gt;Swift和Objective C关于字符串的一个小特性&lt;/h1&gt;
 
 &lt;h2 id=&quot;一unicode的一个小特性&quot;&gt;一、Unicode的一个小特性&lt;/h2&gt;
 
-&lt;p&gt;首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。
+&lt;p&gt;首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。&lt;br /&gt;
 反过来，不是每一个字符都对应一个code point，每一个字符也不止有一个code point的表示方法。
-比如说，“🐯”这个emoji表情对应的code point是“\ud83d\udc2f\u000d\u000a”，由4个code point组成，而不是一个。
-“é”这个字符对应的code point有两个，“\u00e9”以及“\u0065\u0301”这两个code point序列（一个或多个code point）均可表示这个字符。
-那么如何比较两个字符串是否相同呢？Unicode规定了&lt;a href=&quot;http://www.unicode.org/reports/tr15/&quot;&gt;正规化的方法&lt;/a&gt;，要把code point的序列正规化，然后判断是否一致。
+比如说，“🐯”这个emoji表情对应的code point是“\ud83d\udc2f\u000d\u000a”，由4个code point组成，而不是一个。&lt;br /&gt;
+“é”这个字符对应的code point有两个，“\u00e9”以及“\u0065\u0301”这两个code point序列（一个或多个code point）均可表示这个字符。&lt;br /&gt;
+那么如何比较两个字符串是否相同呢？Unicode规定了&lt;a href=&quot;http://www.unicode.org/reports/tr15/&quot;&gt;正规化的方法&lt;/a&gt;，要把code point的序列正规化，然后判断是否一致。&lt;br /&gt;
 下面我们看下Swift和NSString对这个规则的支持情况。&lt;/p&gt;
 
 &lt;h2 id=&quot;二objective-c中的字符串&quot;&gt;二、Objective C中的字符串&lt;/h2&gt;
