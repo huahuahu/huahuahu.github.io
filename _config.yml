@@ -9,7 +9,6 @@ about: >
 url: "http://vinitkumar.me/white-paper"
 baseurl: "" 
 markdown: kramdown
-<<<<<<< HEAD
 highlighter: rouge
 
 gems: [jekyll-paginate,  jekyll-gist]
@@ -33,11 +32,3 @@ google_analytics:
 google_verify:
 # https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
 bing_verify:
-=======
-theme: jekyll-theme-minimal
-gems:
-  - jekyll-feed
-exclude:
-  - Gemfile
-  - Gemfile.lock
->>>>>>> origin/master
