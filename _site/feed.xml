@@ -1,5 +1,144 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-25T18:53:51+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
-</subtitle><entry><title type="html">Swift和objective c关于字符串的一个小特性</title><link href="http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective-C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html" rel="alternate" type="text/html" title="Swift和objective c关于字符串的一个小特性" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective%20C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7</id><content type="html" xml:base="http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective-C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html">&lt;h2 id=&quot;一unicode的一个小特性&quot;&gt;一、Unicode的一个小特性&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-26T09:43:36+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
+</subtitle><entry><title type="html">Sqlite索引的原理</title><link href="http://localhost:4000/2017/02/24/sqlite%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86.html" rel="alternate" type="text/html" title="Sqlite索引的原理" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/sqlite%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86</id><content type="html" xml:base="http://localhost:4000/2017/02/24/sqlite%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86.html">&lt;h1 id=&quot;sqlite索引的原理&quot;&gt;sqlite索引的原理&lt;/h1&gt;
+&lt;h2 id=&quot;一引言&quot;&gt;一、引言&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.cnblogs.com/lyroge/p/3837886.html&quot;&gt;这篇文章&lt;/a&gt;，里面讲到对于一个41G大小、包含百万条记录的数据库进行查询操作，如果利用了索引，可以把操作耗时从37s降到0.2s。
+那么什么是索引呢？利用索引可以加快数据库查询操作的原理是什么呢？&lt;/p&gt;
+&lt;h2 id=&quot;二索引的基本原理&quot;&gt;二、索引的基本原理&lt;/h2&gt;
+
+&lt;p&gt;数据库提供了一种持久化的数据存储方式，从数据库中查询数据库是一个基本的操作，查询操作的效率是很重要的。
+对于查询操作来说，如果被查询的数据已某种方式组织起来，那么查询操作的效率会极大提高。
+在数据库中，一条记录会有很多列。如果把这些记录按照列Col1以某种数据结构组织起来，那么列Col2一定是乱序的。
+因此，数据库在原始数据之外，维护了满足特定查找算法的数据结构，指向原始数据，称之为&lt;strong&gt;索引&lt;/strong&gt;。
+举例来说，在下面的图中，数据库有两列Col1、Col2。在存储时，按照列Col1组织各行，比如Col1已二叉树方式组织。如果查找col1中的某一个值，利用二叉树进行二分查找，不需要遍历整个数据库。
+这样一来列Col2就是乱序的。为了解决这个问题，为Col2建立了索引，即把Col2也按照某种数据结构（这里是二叉树）组织起来。这样子查找列Col2时只需要进行二分查找即可。
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14808584745554.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;三索引的实现&quot;&gt;三、索引的实现&lt;/h2&gt;
+&lt;p&gt;由于数据库是存储在磁盘上的，因此实现索引用的数据结构会存储在磁盘上。磁盘的IO是需要注意的问题。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;二叉树&lt;br /&gt;
+二叉树是一种经典的数据结构，但是并不适合进行数据库索引。&lt;br /&gt;
+原因在于二叉树中每一个节点的度只有2，树的深度较高。在存储时，一般一个节点需要一次磁盘IO，树的深度较高，查询一个数据需要的磁盘IO次数越高，查找需要的时间越长。&lt;/li&gt;
+  &lt;li&gt;B树
+B树是二叉树的变种，主要区别在于每一个节点的度可以大于2，即每一个节点可以分很多叉，大大降低了树的深度。
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824192651928.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;ul&gt;
+      &lt;li&gt;每条数据表示为[key,data]&lt;/li&gt;
+      &lt;li&gt;每个非叶子节点有(n-1)条数据n个指针组成&lt;/li&gt;
+      &lt;li&gt;所有叶节点具有相同的深度，等于树高h&lt;/li&gt;
+      &lt;li&gt;指针指向节点的key大于左边的记录小于右边记录&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;上面这些特点使得B+树的深度大大降低，并且实现了对数据的有序组织。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;B+树&lt;br /&gt;
+B+树是对B树的扩展，特点在于非叶子节点不存储data，只存储key。如果每一个节点的大小固定（如4k，正如在sqlite中那样），那么可以进一步提高内部节点的度，降低树的深度。
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824195985751.jpg&quot; alt=&quot;&quot; /&gt;
+    &lt;ul&gt;
+      &lt;li&gt;非叶子节点只存储key，叶子节点不存储指针&lt;/li&gt;
+      &lt;li&gt;每一个节点大小固定，需要一次读磁盘操作（page）&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;顺序访问指针的B+树&lt;br /&gt;
+对B+树做了一点改变，每一个叶子节点增加一个指向相邻叶子节点的指针，这样子可以提高区间访问的性能。
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824200088734.jpg&quot; alt=&quot;&quot; /&gt;
+如图，访问key在15到30的data。
+    &lt;ul&gt;
+      &lt;li&gt;如果没有水平的指针  &lt;br /&gt;
+ B+树查找找到key=15的data，在同一个块中找到key=18的data。然后进行第二次B+查找，找到key=20的data，在同一个块中找到key=30的data。&lt;/li&gt;
+      &lt;li&gt;有水平的指针&lt;br /&gt;
+ B+树查找找到key=15的data，查找同一个块的内容，或沿着水平指针依次向右遍历。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;四sqlite中数据存储方式&quot;&gt;四、Sqlite中数据存储方式&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;表(table)和索引(Index)都是带顺序访问指针的B+树&lt;/li&gt;
+  &lt;li&gt;table对应的B+树中，key是rowid，data是这一行其他列数据（sqlite为每一行分配了一个rowid）&lt;/li&gt;
+  &lt;li&gt;index对应的B+树种，key是需要索引的列，data是rowid&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;根据索引查找数据时，分两步&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;根据索引找到rowid（第一次B+树查找）&lt;/li&gt;
+  &lt;li&gt;根据rowid查找其他列的数据（第二次B+树查找）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;通过两次B+树查找避免了一次全表扫描。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1. 对某一行或某几行添加PRIMARY KEY或UNIQUE约束，那么数据库会自动为这些列创建索引
+2. 指定某一列为INTEGER PRIMARY KEY，那么这一列和rowid被指定为同一列。即可以通过rowid来获取，也可以通过列名来获取。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h3 id=&quot;五一个例子&quot;&gt;五、一个例子&lt;/h3&gt;
+&lt;p&gt;下面是一个数据库中一个表的统计信息，通过&lt;a href=&quot;https://sqlite.org/sqlanalyze.html&quot;&gt;sqlite3_analyzer&lt;/a&gt;工具得到。
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824209528139.jpg&quot; alt=&quot;-w753&quot; /&gt;
+可以看到表中一共有3651条记录，B树的深度只有2，有33个叶子节点，1个非叶子节点。因此最多只需要2次磁盘IO就可以根据rowid找到一行的数据。&lt;/p&gt;
+&lt;h2 id=&quot;六利用索引提高查找效率&quot;&gt;六、利用索引提高查找效率&lt;/h2&gt;
+&lt;p&gt;比如我们有这么一个表&lt;br /&gt;
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824213415023.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;benchmark
+查询语句如下&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT price FROM fruitsforsale WHERE fruit=‘Peach’
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;p&gt;由于没有索引，因此不得不做一次全表扫描。通过顺序访问指针遍历各个记录(record)，比较fruit这一列和‘peatch’是否一致，如果一致，返回这一行的price列的值。&lt;br /&gt;
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824214192659.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;对‘fruit’列加索引
+如下，运行同样的语句，可以根据索引找到目标列对应的rowid为4，然后根据rowid找到对应行，从而选出price。通过两次B+树查找避免了全表查找。这也是最简单的情况&lt;br /&gt;
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824216313501.jpg&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;多条索引命中
+建立索引时，不要求索引是uique的，即索引表中的key可以是一样的。
+如下图，索引表中有&lt;code class=&quot;highlighter-rouge&quot;&gt;orange&lt;/code&gt;两条记录，找到第一条记录时，根据顺序访问指针可以轻易找到下一条索引，避免另一次B+树查找。（rowid=1和rowid=23可能位于两个不同的叶子节点中）
+即这个查找索引的过程，可以通过一次B+树查和一次next操作完成，而next操作是很快的。&lt;br /&gt;
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824218349665.jpg&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;利用索引加快搜索和排序
+在大多情况下，我们需要同时进行查找和排序操作，这时如果建立适当的索引，可以提高查找效率。
+比如下面表中对fruit和state两列做了索引，运行下面的sql语句时，就不需要进行排序操作了，因为索引表是带有顺序的。&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SELECT price FROM fruitforsale WHERE fruit='Orange' ORDER BY state
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;p&gt;&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824220826728.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;七解释引言中问题&quot;&gt;七、解释引言中问题&lt;/h2&gt;
+&lt;p&gt;在sqlite中有一个命令叫做&lt;code class=&quot;highlighter-rouge&quot;&gt;explain query plan&lt;/code&gt;，可以查看sqlite是如何执行查找操作的。下面的数据库语句不是引言中的查询语句，原理一样&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;37s的操作（没有用索引)&lt;br /&gt;
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824223446285.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;0.2s的操作（用了索引）
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824223522361.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;注意detail列。不用索引时，使用的是“SCAN”这个词，即全表扫描。使用索引时，使用的是“SEARCH”这个词。
+对于一个41G的表来说，进行全表扫描的代价显然是很大的。&lt;/p&gt;
+
+&lt;h2 id=&quot;八参考链接&quot;&gt;八、参考链接&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/yangecnu/p/Introduce-B-Tree-and-B-Plus-Tree.html&quot;&gt;浅谈算法和数据结构: 十 平衡查找树之B树&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.codinglabs.org/articles/theory-of-mysql-index.html&quot;&gt;MySQL索引背后的数据结构及算法原理&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.sqlite.org/queryplanner.html&quot;&gt;Query Planning(这篇是sqlite关于索引的文档)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.sqlite.org/eqp.html&quot;&gt;EXPLAIN QUERY PLAN&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/lyroge/p/3837886.html&quot;&gt;MySQL单表百万数据记录分页性能优化&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">sqlite索引的原理 一、引言</summary></entry><entry><title type="html">Swift和objective c关于字符串的一个小特性</title><link href="http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective-C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html" rel="alternate" type="text/html" title="Swift和objective c关于字符串的一个小特性" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective%20C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7</id><content type="html" xml:base="http://localhost:4000/2017/02/24/Swift%E5%92%8CObjective-C%E5%85%B3%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%89%B9%E6%80%A7.html">&lt;h2 id=&quot;一unicode的一个小特性&quot;&gt;一、Unicode的一个小特性&lt;/h2&gt;
 
 &lt;p&gt;首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。&lt;br /&gt;
 反过来，不是每一个字符都对应一个code point，每一个字符也不止有一个code point的表示方法。
