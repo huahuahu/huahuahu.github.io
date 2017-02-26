@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-26T09:43:36+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-26T10:39:15+08:00</updated><id>http://localhost:4000/</id><title type="html">花花🐯的博客</title><subtitle>know the world, know myself
 </subtitle><entry><title type="html">Sqlite索引的原理</title><link href="http://localhost:4000/2017/02/24/sqlite%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86.html" rel="alternate" type="text/html" title="Sqlite索引的原理" /><published>2017-02-24T00:00:00+08:00</published><updated>2017-02-24T00:00:00+08:00</updated><id>http://localhost:4000/2017/02/24/sqlite%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86</id><content type="html" xml:base="http://localhost:4000/2017/02/24/sqlite%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86.html">&lt;h1 id=&quot;sqlite索引的原理&quot;&gt;sqlite索引的原理&lt;/h1&gt;
 &lt;h2 id=&quot;一引言&quot;&gt;一、引言&lt;/h2&gt;
 
@@ -22,7 +22,7 @@
 二叉树是一种经典的数据结构，但是并不适合进行数据库索引。&lt;br /&gt;
 原因在于二叉树中每一个节点的度只有2，树的深度较高。在存储时，一般一个节点需要一次磁盘IO，树的深度较高，查询一个数据需要的磁盘IO次数越高，查找需要的时间越长。&lt;/li&gt;
   &lt;li&gt;B树
-B树是二叉树的变种，主要区别在于每一个节点的度可以大于2，即每一个节点可以分很多叉，大大降低了树的深度。
+B树是二叉树的变种，主要区别在于每一个节点的度可以大于2，即每一个节点可以分很多叉，大大降低了树的深度。&lt;br /&gt;
 &lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824192651928.jpg&quot; alt=&quot;&quot; /&gt;
     &lt;ul&gt;
       &lt;li&gt;每条数据表示为[key,data]&lt;/li&gt;
@@ -34,7 +34,7 @@ B树是二叉树的变种，主要区别在于每一个节点的度可以大于2
     &lt;p&gt;上面这些特点使得B+树的深度大大降低，并且实现了对数据的有序组织。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;B+树&lt;br /&gt;
-B+树是对B树的扩展，特点在于非叶子节点不存储data，只存储key。如果每一个节点的大小固定（如4k，正如在sqlite中那样），那么可以进一步提高内部节点的度，降低树的深度。
+B+树是对B树的扩展，特点在于非叶子节点不存储data，只存储key。如果每一个节点的大小固定（如4k，正如在sqlite中那样），那么可以进一步提高内部节点的度，降低树的深度。&lt;br /&gt;
 &lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824195985751.jpg&quot; alt=&quot;&quot; /&gt;
     &lt;ul&gt;
       &lt;li&gt;非叶子节点只存储key，叶子节点不存储指针&lt;/li&gt;
@@ -42,8 +42,8 @@ B+树是对B树的扩展，特点在于非叶子节点不存储data，只存储k
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;顺序访问指针的B+树&lt;br /&gt;
-对B+树做了一点改变，每一个叶子节点增加一个指向相邻叶子节点的指针，这样子可以提高区间访问的性能。
-&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824200088734.jpg&quot; alt=&quot;&quot; /&gt;
+对B+树做了一点改变，每一个叶子节点增加一个指向相邻叶子节点的指针，这样子可以提高区间访问的性能。&lt;br /&gt;
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824200088734.jpg&quot; alt=&quot;&quot; /&gt;&lt;br /&gt;
 如图，访问key在15到30的data。
     &lt;ul&gt;
       &lt;li&gt;如果没有水平的指针  &lt;br /&gt;
@@ -76,7 +76,7 @@ B+树是对B树的扩展，特点在于非叶子节点不存储data，只存储k
 &lt;/div&gt;
 &lt;h3 id=&quot;五一个例子&quot;&gt;五、一个例子&lt;/h3&gt;
 &lt;p&gt;下面是一个数据库中一个表的统计信息，通过&lt;a href=&quot;https://sqlite.org/sqlanalyze.html&quot;&gt;sqlite3_analyzer&lt;/a&gt;工具得到。
-&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824209528139.jpg&quot; alt=&quot;-w753&quot; /&gt;
+&lt;img src=&quot;http://oda58fqub.bkt.clouddn.com/14824209528139.jpg&quot; alt=&quot;-w353&quot; /&gt;
 可以看到表中一共有3651条记录，B树的深度只有2，有33个叶子节点，1个非叶子节点。因此最多只需要2次磁盘IO就可以根据rowid找到一行的数据。&lt;/p&gt;
 &lt;h2 id=&quot;六利用索引提高查找效率&quot;&gt;六、利用索引提高查找效率&lt;/h2&gt;
 &lt;p&gt;比如我们有这么一个表&lt;br /&gt;
