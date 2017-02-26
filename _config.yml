@@ -23,7 +23,7 @@ github_username:  huahuahu
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-tactile
+theme: jekyll-theme-minimal
 gems:
   - jekyll-feed
 exclude:
