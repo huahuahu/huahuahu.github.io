@@ -1,3 +1,10 @@
+---
+categories: sqlite  
+tag:  
+- index  
+
+---
+
 # sqlite索引的原理
 ## 一、引言
 

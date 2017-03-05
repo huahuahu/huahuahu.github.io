@@ -1,4 +1,10 @@
+---
+categories: 文字处理  
+tag:  
+- swift  
+- unicode
 
+---
 ## 一、Unicode的一个小特性  
 
 首先，Unicode规定了许多code point，每一个code point表示一个字符。如\u0033表示字符“3”，\u864e表示字符“你”。  
