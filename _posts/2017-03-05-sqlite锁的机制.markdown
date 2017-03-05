@@ -3,8 +3,6 @@ categories: sqlite
 tag:  
 - lock  
 ---
-# sqlite锁的机制
-
 ![](http://oda58fqub.bkt.clouddn.com/14740800487429.jpg)  
 
 1. reserved state  
