@@ -1,0 +1,58 @@
+---
+categories: sqlite  
+tag:  
+- lock  
+---
+# sqlite锁的机制
+
+![](http://oda58fqub.bkt.clouddn.com/14740800487429.jpg)  
+
+1. reserved state  
+进入reserved state以后，sqlite可以修改数据库中的内容，不过把修改以后的内容写到pager的缓存里，大小由*page cache*指定。
+进入这个状态以后，pager开始初始化日志文件，用户回滚和异常恢复。（其实就是把日志中的文件内容拷贝到数据库文件中去）
+这种机制使得数据库在进行写操作时可以同时进行读操作。
+不过由于只有一个**reserved**或**exclusive**锁，所以只能有一个写操作
+2. pending state  
+从reserved到exclusive要经历一个pending state，即获取pending锁。
+pending是一个gateway lock。
+    - 不会有事务从unlock状态到shared状态，保证了不会有新的读操作和写操作
+    - 已经拥有shared锁的事务可以正常运行。写事务等待着这些事务的完成，释放锁。
+3. Exclusive state  
+当其他所有的数据库链接都释放了锁之后，整个数据库就只有一个写操作的事务了。进入Exclusive状态。
+    1. pager检查日志文件已经被写到了磁盘中，调用fsync()系统调用（如果这个系统调用挂了，SQlite也没办法）
+        - 如果SYNCHRONOUS PRAGMA是默认的设置，会调用一次sync操作。
+        - 如果SYNCHRONOUS PRAGMA是**FULL**，会调用两次sync操作
+        - 如果SYNCHRONOUS PRAGMA是**NONE**，不会调用sync操作
+    2. pager把已经修改完的内容写入数据库文件
+    3. 清理日志文件，释放锁
+
+## 锁实现的原理  
+![](http://oda58fqub.bkt.clouddn.com/14740819602241.jpg)
+
+SQLite锁的实现是基于标准的文件锁。SQlite在数据库文件上有三个锁，1个reserved byte，一个pending byte以及一个shared region。
+
+1. unlocked->shared   
+获取pending byte的读锁。获取成功以后，在shared region随机获得一个byte的读锁，并释放pending byte的读锁。
+1. shared->reserved  
+获取reserved byte的写锁即可。
+2. reserved->exclusive  
+首先获取pending byte的写锁。  
+一旦成功，那么由于pending byte已经被锁定，因此不会有unlocked->shared。
+接下来，会尝试获取整个shared region的写锁。
+由于shared region有一些被active的事务持有读锁，因此数据库会等待这些事务完成并释放锁。  
+
+## 恢复机制
+使用reserved byte来决定是否需要恢复。
+一般来说，日志文件和reserved lock是同步的，即同时出现和消失。
+如果SQLite发现了日志文件，却没有发现reserved lock，那么可以认为发生了crash或系统掉电。
+当pager首次打开数据库或从数据库文件读取到内存时，会做一个完整性检查。如果发现不一致（有日志文件却没有reserved lock），那么数据库进入恢复模式。此时的数据库日志文件叫做hot journal。
+进入恢复模式以后，会直接从shared状态进入pending状态，如第一个图的灰线所示。这样子可以保证
+1. 不会有新的数据库连接
+2. shared状态的数据库连接不会进入恢复模式（实际上不会发生，因为第一个数据库连接会进入恢复模式，从而阻塞其他的数据库连接进入shared状态）
+
+简单的说，一个hot journal就是一个implicit exclusive锁。如果写操作crash了，那么在其他数据库连接成功恢复数据库以前，数据库不会有其他操作。crash以后第一个操作数据库的pager会看到hot journal，并进行数据库恢复。
+
+## 关于文件锁
+>File locks really are just flags within the operating system kernel, usually. (The details depend on the specific OS layer interface.) Hence, the lock will instantly vanish if the operating system crashes or if there is a power loss. It is usually also the case that the lock will vanish if the process that created the lock exits.
+
+
