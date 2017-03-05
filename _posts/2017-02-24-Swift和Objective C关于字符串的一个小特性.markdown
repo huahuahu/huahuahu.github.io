@@ -1,5 +1,5 @@
 ---
-categories: 文字处理  
+categories: characters  
 tag:  
 - swift  
 - unicode
