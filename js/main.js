@@ -1,5 +1,4 @@
 hljs.initHighlightingOnLoad();
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 $(document).ready(function(){
                   $("h2,h3,h4,h5,h6").each(function(i,item){
                                            var tag = $(item).get(0).localName;
