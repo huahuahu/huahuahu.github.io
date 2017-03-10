@@ -4,8 +4,7 @@ tag:
 - color  
 ---
 # iOS开发之像素Compositing   
-![](https://ww3.sinaimg.cn/large/006tNbRwgy1fdgzhho7ecj316q0t8jve.jpg)$$
-
+![](https://ww2.sinaimg.cn/large/006tNbRwly1fdhf0q5kjkj316c0wktdl.jpg)
 
 
 
