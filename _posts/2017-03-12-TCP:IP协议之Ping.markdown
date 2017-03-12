@@ -1,5 +1,5 @@
 ---
-title: TCP/IP协议之ICMP   
+title: TCP/IP协议之Ping    
 categories: network  
 tag:    
 - tcp/ip
