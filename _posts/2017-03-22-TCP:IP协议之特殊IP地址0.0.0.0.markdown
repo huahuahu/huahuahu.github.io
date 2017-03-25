@@ -1,0 +1,23 @@
+---
+title: TCP/IP协议之特殊地址0.0.0.0  
+categories: network  
+tag:    
+- tcp/ip  
+
+---
+  
+
+
+> In the Internet Protocol Version 4, the address 0.0.0.0 is a non-routable meta-address used to designate an invalid, unknown or non-applicable target. To give a special meaning to an otherwise invalid piece of data is an application of in-band signaling.
+
+>In the context of servers, 0.0.0.0 means "all IPv4 addresses on the local machine". If a host has two IP addresses, 192.168.1.1 and 10.1.2.1, and a server running on the host listens on 0.0.0.0, it will be reachable at both of those IPs.
+
+>In the context of routing, 0.0.0.0 usually means the default route, i.e. the route which leads to "the rest of" the internet instead of somewhere on the local network.
+
+
+![](http://oda58fqub.bkt.clouddn.com/14901674302229.jpg)
+
+[0.0.0.0](https://en.wikipedia.org/wiki/0.0.0.0)  
+
+
+
