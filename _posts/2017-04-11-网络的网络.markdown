@@ -1,6 +1,6 @@
 ---
 title:  网络的网络——当今的互联网   
-categories: Network  
+categories: network  
 
 ---
 
