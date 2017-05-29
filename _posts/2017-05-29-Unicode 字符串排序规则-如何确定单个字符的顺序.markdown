@@ -118,7 +118,8 @@ Unicode 把所有字符分为两类，并按顺序排列：
     locale is el_CN, result is (µ,язык,上,㊤,)  //希腊语
     locale is ru_CN, result is (язык,µ,上,㊤,) //俄语
     locale is zh_CN, result is (上,㊤,µ,язык,) //中国
-    locale is en, result is (µ,язык,上,㊤,)        //英语
+    locale is en, result is (µ,язык,上,㊤,)        //英语  
+   
 ## 五、参考资料 
 1. [UNICODE COLLATION ALGORITHM](http://www.unicode.org/reports/tr10/)
 2. [CLDR](http://cldr.unicode.org/)  
