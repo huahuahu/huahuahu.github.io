@@ -1,0 +1,132 @@
+---
+title: Unicode 字符串排序规则（一）：如何确定单个字符的顺序    
+categories: Characters  
+tag:    
+- 多语言
+
+---
+
+#   
+## 一、一个具体的例子引发的问题  
+当今是国际化的时代，多种语言可能同时显示在屏幕上。比如一个人可能喜欢听华语歌、英文歌、韩文歌和日语歌，又比如他的联系人中有中国人、英国人、日本人、韩国人以及有英文名字的中国人。  
+在这种情况下，他的手机上需要维护一个列表，每一项可能是中文、韩文、英文和日文。在许多情况下需要对这个列表进行维护，那么如何对这些表项进行排序呢？为了解决这个问题，至少要回答以下几个问题：  
+
+1. 中文、韩文、英文、日文的顺序是怎样的呢？那个语种在前面呢？  
+2. 同一个语种内部如何排序呢？比如中文，是按照汉语拼音还是部首，抑或是笔画数排序呢？  
+3. 对于数字、标点符号、特殊符号等独立于某一个书写系统的字符 (character)，如何处理呢？    
+
+## 二、事实上的排序标准: UCA+CLDR      
+使用这种方法来排序的公司和组织有 Apple、Google、IBM、MicroSoft、Amazon、Python、Wikimedia Foundation (Wikipedia)、Apache...  
+在苹果的文档中，可以找到下面的描述：  
+> Localized string comparisons are based on the Unicode Collation Algorithm, as tailored for different languages by CLDR (Common Locale Data Repository). 
+
+1.  UCA  
+    首先解释一下 Collation 的含义。  
+    > Collation is the general term for the process and function of determining the sorting order of strings of characters.   
+
+    如果有若干字符串需要排序，确定排序的过程就是 Collation，可以认为是排序 (sort) 在字符串领域的特化。     
+    Unicode Collation Algorithm (UCA) 是 Unicode 制定的如何比较两个 Unicode 字符串的规范。注意这里是字符串，而不仅仅是字符。  
+UCA 的规则很复杂，我们以后再说。但从名字上可以看出，UCA 只是一个算法，算法需要数据才能产出结果。  
+UCA 最后产出了一个文档，指定了默认情况下 Unicode 字符的顺序。但是这仅仅是默认情况，也就是照顾了大多数情况（也就是排序对英语国家比较友好。。。）。对于其他地区的人们来说，就需要输入和默认情况不同的数据，以获得和当地习惯相符合的结果。比如同样的汉字，在中国大陆是按照汉语拼音排序的，在香港就是按照笔画数目排序的。
+2. CLDR  
+    Common Locale Data Repository (CLDR)，从名字上可以看出，这个实际上是一堆数据的仓库。对于指定的地区 (locale)，可以从中找到指定的数据。再结合 UCA，就可以得到符合当期习惯的排序结果。  
+    
+## 三、UCA 默认顺序  
+UCA 最后产出了一个文档，在` common/uca/allkeys_CLDR.txt`。这个文档就指定了默认情况下的 Unicode 字符的顺序。      
+
+        0031  ; [.1B3F.0020.0002] # DIGIT ONE          
+        0661  ; [.1B3F.0020.0002] # ARABIC-INDIC DIGIT ONE
+
+这个文档中的每一行都有上面的格式。分号`;`之前的部分是 Unicode 字符对应的 Unicode 码点 (code point)。分号之后是用于 UCA 算法的权重，用`.`分隔。`#`及之后部分是注释。  
+所有的 Unicode 字符从上到下依次排序。  
+### 3.1 Unicode 字符分类  
+Unicode 把所有字符分为两类，并按顺序排列：  
+
+1. common characters    
+    包括空格、标点、通用符号、货币符号和数字。
+2. script characters  
+    包括拉丁字母、希腊字母、汉字等。  
+
+把字符分类，便于把某一类字符统统放到另一类字符之前，比如把汉字放在英文之前。    
+**注意：这里默认排序并不是按照 Unicode 码点顺序依次排列！**
+
+### 3.2 利用 UCA 默认值排序的例子  
+    rawArray = @[@"cc",@"曹操",@"bb",@"1",@"١",@"(en",@"（zh"];
+    NSArray *sortedArray = [rawArray sortedArrayUsingComparator:^NSComparisonResult(NSString *  _Nonnull obj1, NSString *  _Nonnull obj2) {
+        return [obj1 compare:obj2 options:NSCaseInsensitiveSearch];
+    }];
+    __block NSMutableArray *codeUnits = [NSMutableArray array];
+    [sortedArray enumerateObjectsUsingBlock:^(NSString*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [codeUnits addObject:@([obj characterAtIndex:0])];
+    }];
+    NSLog(@"after default sort , result is %@, codeUnits is %@",sortedArray,codeUnits);
+    
+    NSLocale *locale=[[NSLocale alloc] initWithLocaleIdentifier:@"en"];
+    sortedArray = [rawArray sortedArrayUsingComparator:^NSComparisonResult(NSString *  _Nonnull obj1, NSString *  _Nonnull obj2) {
+        NSRange string1Range = NSMakeRange(0, [obj1 length]);
+        return [obj1 compare:obj2 options:0 range:string1Range locale:locale];
+    }];
+    NSLog(@"after locale sort , result is %@",sortedArray);
+输出结果如下：    
+
+    after default sort , result is ((en,1,bb,cc,١,曹操,（zh,), codeUnits is (40,49,98,99,1633,26361,65288,)  
+    after locale sort , result is ((en,（zh,1,١,bb,cc,曹操,)  
+
+未指定地区信息时，`NSString`的排序函数仅仅是按照`UTF-16` code unit 的值排列的。在指定地区信息是`en`后，按照`allkeys_CLDR.txt`中指定的顺序，也更加符合人们的预期。依次是标点符号（英文和中文的左括号）、数字（阿拉伯数字 1 和另一种表示方法）、scripts（英文和中文）
+
+## 四、CLDR 对排序结果进行调整 (tailor)
+![-w349](http://oda58fqub.bkt.clouddn.com/14960647773505.jpg)  
+
+如上图，CLDR 最新版本的数据有很多文件夹，都是用一种标记语言 (LDML) 来书写的。我们一步一步来确定如何决定在中国大陆对 Unicode 字符进行排序。
+### 4.1 确定采用何种排序规则    
+在`bcp47/collation.xml`中，指出了可选的很多种排序方式，包括`standard`、`pinyin`、`big5han`、`stroke`（笔画排序）。  
+![-w750](http://oda58fqub.bkt.clouddn.com/14960654502497.jpg)  
+那么在中国大陆应该采用哪种排序方法呢？可以在`collation/zh.xml`中找到指定的排序方式是`pinyin`。而繁体中文的默认排序方式是`stroke`。
+
+        <defaultCollation>pinyin</defaultCollation> in  collation/zh.xml  
+        <defaultCollation>stroke</defaultCollation> in collation/zh_Hant.xml            
+### 4.2  确定汉语内部的排序规则    
+在`collation/zh.xml` 中可以看到下图。和程序中的头文件一样，`pinyin`排序规则引入了`private-pinyin`这个规则，此外，还引入了默认的规则。即如果两个字符（如阿拉伯数字 1 和 2 ）在`pinyin`规则中找不到依据，那么根据默认规则进行排序。这样子做大大降低了维护成本，在原理上和 "Don't repeat yourself" 类似。
+![-w746](http://oda58fqub.bkt.clouddn.com/14960663088149.jpg)  
+ 我们现在来看具体的排序规则。    
+ 
+ 1. 在`private-pinyin`中，指定了可以标“声调”的字母在各种声调情况下的排列顺序。    
+    你没有看错，`m`和`n`也可以标声调！
+ 2. 指定了拼音的顺序以及同音字的顺序  
+    首先按照拼音排序，表现为不同行之间的顺序。对于同音字，也就是每一行之间的顺序，先按照笔画数排序，再按照`kRSUnicode`排序。  
+    请注意，在`ā`之前有一行，是用来构建索引的，即此行之下直至另一个索引都属于`A`的索引之内。   
+       
+### 4.3 不同语种字母的顺序  
+当指定了地区之后，这个地区的字符将会在所有的 “script characters” 中排列第一。其他地区的字符按照默认顺序排序。    
+
+1.  确定当地的书写系统 (scripts)    
+    在`./main/zh_Hans_CN.xml`中，看到`<script type="Hans"/>` 
+2. 确定书写系统包括哪些字符  
+    在`./uca/FractionalUCA.txt`中，搜索`first primary`，得到下图： 
+    ![](http://oda58fqub.bkt.clouddn.com/14960717040887.jpg)  
+    在此行之下，即是所有汉字。第一个就是康熙字典的“一”，第二个是“㊀”。  
+3. 其他书写系统的字符的顺序    
+    依据默认的顺序，即在`common/uca/allkeys_CLDR.txt`规定的顺序。  
+    
+### 4.4 一个例子  
+对于以下的字符串数组排序：  
+
+        rawArray = @[@"上",@"㊤",@"μ",@"язык"];
+
+这个字符数组中，包括汉语、希腊语和俄语。指定不同的地区之后，得到不同的结果。  
+    
+    locale is el_CN, result is (µ,язык,上,㊤,)  //希腊语
+    locale is ru_CN, result is (язык,µ,上,㊤,) //俄语
+    locale is zh_CN, result is (上,㊤,µ,язык,) //中国
+    locale is en, result is (µ,язык,上,㊤,)        //英语
+## 五、参考资料 
+1. [UNICODE COLLATION ALGORITHM](http://www.unicode.org/reports/tr10/)
+2. [CLDR](http://cldr.unicode.org/)  
+3. [CLDR 30.0.3](http://unicode.org/Public/cldr/30.0.3/)
+4. [UNICODE LOCALE DATA MARKUP LANGUAGE](http://www.unicode.org/reports/tr35/)
+5. [UNICODE HAN DATABASE (UNIHAN)](http://www.unicode.org/reports/tr38/)
+
+
+    
+
+
