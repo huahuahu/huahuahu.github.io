@@ -1,0 +1,81 @@
+---
+title: Unicode 字符串排序规则（二）：如何比较字符串       
+categories: characters  
+tag:  
+- unicode
+
+---
+
+
+## 一、UCA 简介  
+Unicode Collation Algorithm (UCA) 是 Unicode 规定的如何比较两个字符串大小的算法，也是事实上的标准。我们先来看下它的几个特征。   
+### 1.1 Multi-Level Comparison  
+为了处理字符串比较的复杂性，UCA 采用了多级比较的方法。  
+当比较两个字符串时，先比较最重要的特征——字母。如果字母相同，再比较重音 (accent)。如果重音还相同，再比较大小写。依次类推，这些特征之间的顺序可以改变。  
+![-w361](http://oda58fqub.bkt.clouddn.com/14961073651059.jpg)    
+如上图所示，首先比较基本字符串，然后依次是 Accent、 Case、Punctuation等，最后比较是否完全相等。    
+**一定要注意，Unicode 码点的顺序不是排序的依据。**  
+> **The position of characters in the Unicode code charts does not specify their sort order.**
+
+#### 为何要采样多级比较  
+考虑一个例子，我们有`a < ä && e < ë && a < e && ä < ë`，如果我们仅仅采用单级比较的话，显然有`a < ä < e < ë`。  
+比较字符串`ae`和`äa`。我们想要得到的结果肯定是`äa < ae`。如果按照单级比较的话，由于`a < ä`，我们会得到`ae < äa`。  
+使用多级比较，可以优先处理主要矛盾。  
+### 1.2 Canonical Equivalence
+在 Unicode 中，可能出现两个不同码点序列表示的是同一个字符串，即这两个序列具有 Unicode等价性。这些具有 Unicode 等价性的字符串在排序时，应该被认为是同样的。下表是一些 Unicode 等价性的例子。  
+![-w861](http://oda58fqub.bkt.clouddn.com/14961084428523.jpg)    
+### 1.3 Contextual Sensitivity
+在某些语言中，字符串的比较不仅仅是单个字符序列的比较，和字符出现的上下文有关。UCA 必须处理好这些事情，如下所示：  
+![-w267](http://oda58fqub.bkt.clouddn.com/14961086301875.jpg)
+### 1.4 Customization
+在实际使用中，UCA 应该可以处理一些用户自定义的规则，包括但不限于：  
+
+1. Language。  
+    排序结果应该符号目标语言使用者的预期。  
+2. Case Ordering  
+    有时大写在前，有时小写在前。  
+3. Script Order  
+    用户可能希望一种文字出现在另一种文字之前。  
+    b < ב < β < б [Latin < Hebrew < Greek < Cyrillic] versus  
+    β < b < б < ב [Greek < Latin < Cyrillic < Hebrew]  
+4. Numbers  
+    用户可能希望把字符串按照数字排序，如`A2 < A10`。  
+
+## 二、UCA 排序算法处理过程  
+### 2.1 Normalize  
+使用 Unicode 规范化算法，把字符串以标准等价方式来分解 (Normalization Form Canonical Decomposition, NFD)。  
+### 2.2 Produce Array
+对字符串中的每一个字符进行多级量化，转化为数组，便于之后的比较。  
+![-w771](http://oda58fqub.bkt.clouddn.com/14961093383132.jpg)    
+如上所示，每一个字符对应一个 collation element；每一个元素中用`.`分隔不同等级的权重的值。比如`c`的第一权重是`0706`，第二权重是`0020`，第三权重是`0002`。  
+### 2.3 Form Sort Key  
+把数组中所有非零权重的值按照等级连接起来，组成一个 sort key。  
+![](http://oda58fqub.bkt.clouddn.com/14961098804812.jpg)
+![](http://oda58fqub.bkt.clouddn.com/14961098956728.jpg)  
+如果指定了只比较等级 1、2，那么等级 3 就不会在 sort key 中出现。  
+### 2.4  Compare  
+使用一种方法对字符串的 sort key 进行排序。下面是一个排序结果的例子。  
+![-w600](http://oda58fqub.bkt.clouddn.com/14961101727403.jpg)  
+最后的排序结果是`"cab" <<< "Cab" << "cáb" < "dab$"`。  
+
+1. 对于字符串 1 和 2，第一个区别是 0002 VS 0008 (Level 3).
+2. 对于字符串 2 和 3，第一个区别是 0020 VS 0021 (Level 2).
+3. 对于字符串 3 和 4，第一个区别是 0706 VS 0712 (Level 1).  
+
+## 三、其他
+1. 生成Collation Element 时，具体的值可以被修改  
+    CLDR 指定了如何根据语言和地区进行处理，还包括其他内容。
+2. 字符串有时需要预处理    
+    在某些具体的情形下，需要进行预处理，下面是一些例子。  
+    
+    1. McBeth -> MacBeth  
+    2. St. -> Saint 或者 St. -> Street  
+    3.  去掉冠词  
+    4. 加入额外信息。对于汉字来说，有多音字。  
+3. UCA 只是规定了一个算法。具体的实现可以不同，只要保证和 UCA 结果相同。
+
+## 四、参考
+1. [UNICODE COLLATION ALGORITHM](http://www.unicode.org/reports/tr10/)
+2. [UNICODE NORMALIZATION FORMS](http://www.unicode.org/reports/tr15/)
+3. [CLDR](http://cldr.unicode.org/)
+
