@@ -1,0 +1,191 @@
+---
+title: Unicode 字符串排序规则（一）：如何确定单个字符的顺序    
+categories: characters  
+tag:    
+- 多语言
+
+---
+
+# Unicode字符串索引
+## 一、目标  
+在通讯录中，我们有很多联系人，需要把这些联系人进行索引。对于每一个索引项对应的若干字符串，需要对这些字符串进行排序。  
+需要解决两个问题：  
+
+1. 如何确定某个汉字应该被哪个字符索引？  
+2. 某个索引项对应的字符串，如何排序？  
+
+我们已经知道了问题 2 的解决方案，即 UCA + CLDR。 下面我们来解决问题 1。
+## 二、Unicode 提供的解决方案    
+Unicode 指出了某个语言的索引项以及如何对某个字符进行索引。
+### 2.1 确定语言的索引项  
+这个看来不是问题，肯定是 A-Z 嘛。然而并不是这样子，因为不同的语言对应的索引项不同的，同一个语言不同排序方式对应的索引项也是不同的。在`common/main`中，指定了语言对应的索引项。  
+![-w1329](http://oda58fqub.bkt.clouddn.com/14961142041004.jpg)  
+如上图所示，中文的索引是`A-Z`，而“标准摩洛哥塔马塞特文 (zgh)”的索引字母是`ⴰ ⴱ ⴳ ⴷ ⴹ ⴻ ⴼ ⴽ ⵀ ⵃ ⵄ ⵅ ⵇ ⵉ ⵊ ⵍ ⵎ ⵏ ⵓ ⵔ ⵕ ⵖ ⵙ ⵚ ⵛ ⵜ ⵟ ⵡ ⵢ ⵣ ⵥ`。  
+### 2.2 确定某个字符对应的索引项  
+1. 对于普通的字符来说，对应的 collation 的第一权重 (primary weight) 用来确定这个字符的索引。    
+    这里有很多复杂的逻辑，不过对中英混排没有关系，所以先不看。
+2. 对于 CJK 统一表意文字有另一套规则  
+    对于 CJK 统一表意文字，每一种排序规则（笔画、拼音、部首）都指定了索引项。下面我们通过`collation/zh.xml`中的内容查看规则。  
+    1. 对于按照笔画排序的索引  
+        这是繁体字的索引的规则。从下图可以看出，文字和索引项之间的关系。  
+        ![-w537](http://oda58fqub.bkt.clouddn.com/14961153565668.jpg)  
+    2. 对于按照拼音排序的索引  
+        这是简体字索引的规则。从下图可以看出文字和索引项之间的关系。  
+        ![-w497](http://oda58fqub.bkt.clouddn.com/14961154516384.jpg)    
+    
+## 三、iOS 对应的 API  
+> The **UILocalizedIndexedCollation** class is a convenience for organizing, sorting, and localizing the data for a table view that has a section index. The table view’s data source then uses the collation object to provide the table view with input for section titles and section index titles.    
+
+UILocationdIndexedCollation 是苹果给出的API，专门用于 tableview 的排序、索引和本地化。下面我们通过一个例子来说明如何使用。  
+### 3.1 指定本地化  
+根据苹果文档，首先必须指定支持的地区才能正确使用这个类。  
+> your application bundle must properly declare support for the languages you want UILocalizedIndexedCollation to support. You can add localizations to your application bundle either by adding the appropriate .lproj folders, or by specifying supported localizations in your CFBundleLocalizations key in your application's info.plist file.  
+
+文档中指出了两种方法，我们使用第二种，在`info.plist`文件中加入相应的key。  
+![-w500](http://oda58fqub.bkt.clouddn.com/14961162867576.jpg)  
+
+### 3.2 生成一个实例  
+    // Get the current collation and keep a reference to it.
+    self.collation = [UILocalizedIndexedCollation currentCollation];  
+    NSLog(@" section title is :%@",self.collation.sectionTitles);
+    
+当本机的语言首选项不同时，得到的`sectionTitles`也不同。默认语言是“简体中文”时，输出如下：  
+
+     section title is :(
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z,
+    "#")  
+
+默认语言是“繁体中文（香港）”时，输出如下：  
+
+    section title is :(
+    1 畫,
+    2 畫,
+    3 畫,
+    4 畫,
+    5 畫,
+    6 畫,
+    7 畫,
+    8 畫,
+    9 畫,
+    10 畫,
+    11 畫,
+    12 畫,
+    13 畫,
+    14 畫,
+    15 畫,
+    16 畫,
+    17 畫,
+    18 畫,
+    19 畫,
+    20 畫,
+    21 畫,
+    22 畫,
+    23 畫,
+    24 畫,
+    25 畫以上,
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L,
+    M,
+    N,
+    O,
+    P,
+    Q,
+    R,
+    S,
+    T,
+    U,
+    V,
+    W,
+    X,
+    Y,
+    Z,
+    "#")
+### 3.3 把所有的字符串分配到指定的索引项中  
+    for (NSString *str in self.allStrings) {
+    // Ask the collation which section number the str belongs in, based on its locale name.
+        NSInteger sectionNumber = [self.collation sectionForObject:str collationStringSelector:@selector(description)];
+        NSMutableArray *sectionStrs = newSectionsArray[sectionNumber];
+        //  Add the str to the section.
+        [sectionStrs addObject:str];
+    }  
+
+这里的关键是下面这个函数  
+
+    - (NSInteger)sectionForObject:(id)object collationStringSelector:(SEL)selector;  
+    
+`selector` 是一个方法，返回字符串，被`UILocalizedIndexedCollation`实例用于判断应该把`obj`放到第几个section，即第几个索引项。  
+### 3.4 对每个 section 中字符进行排序  
+    // Now that all the data's in place, each section array needs to be sorted.
+    for (index = 0; index < sectionTitlesCount; index++) {
+        NSMutableArray *strArrayForSection = newSectionsArray[index];
+        // If the table view or its contents were editable, you would make a mutable copy here.
+        NSArray *sortedStrArrayForSection = [self.collation sortedArrayFromArray:strArrayForSection collationStringSelector:@selector(description)];
+        // Replace the existing array with the sorted array.
+        newSectionsArray[index] = sortedStrArrayForSection;
+    }  
+
+这里的关键是下面这个函数  
+
+    - (NSArray *)sortedArrayFromArray:(NSArray *)array collationStringSelector:(SEL)selector;
+
+`array` 中的每一个对象执行`selector`方法，返回一个字符串。所有的字符串排序时候的结果就是在这个 section 中的顺序，这里排序方法加入了地区信息。当然也可以使用自定义的排序方法，只要最后得到每一个 section 中所有对象的顺序就可以了。    
+## 四、结果演示    
+![-w372](http://oda58fqub.bkt.clouddn.com/14961181643271.jpg)    
+从图中我们可以看出几个特点：  
+
+1. 索引是 A-Z 再加上 #  
+2. `za` < `左边`    
+    `左边` 对应拼音是`zuo bian`，`za` < `zuo`。
+3. `左边` <`zuo bian`    
+    首选项是汉字，汉字在前，英文在后。  
+4. `zuo bian` < `左右`  
+    因为`zuo bian` < `zuo you`，即`bian` < `you`。
+5. `左右` < `zuobian`    
+    `zuo you` < `zuobian`。 因为空格小于任何一个字母。
+    
+## 五、未解决问题    
+其他语言是如何对应到索引项`A-Z`的呢？比如`μ`  
+
+## 六、参考  
+1. [UNICODE LOCALE DATA MARKUP LANGUAGE (LDML)
+PART 5: COLLATION](http://www.unicode.org/reports/tr35/tr35-collation.html#Index_Characters)  
+2. [UNICODE LOCALE DATA MARKUP LANGUAGE (LDML)
+PART 2: GENERAL](http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements)  
+3. [UILocalizedIndexedCollation](https://developer.apple.com/reference/uikit/uilocalizedindexedcollation)
+4. [UITableView Fundamentals for iOS](https://developer.apple.com/library/content/samplecode/TableViewSuite/Introduction/Intro.html)
+
