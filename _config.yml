@@ -4,9 +4,9 @@
 baseurl:
 url: http://mazhuang.org
 date_format: "ordinal"
-title: 码志
-subtitle: "打码改变人生"
-description: "马壮的个人博客"
+title: 花花🐯
+subtitle: 
+description: "我的个人博客"
 keywords: 码志, Zhuang Ma, mzlogin, mazhuang
 favicon: /favicon.ico
 timezone: Asia/Shanghai
@@ -21,7 +21,7 @@ organization: zkh360.com
 organization_url: http://www.zkh360.com
 github_username: mzlogin
 location: Wuhan, China
-email: chumpma@gmail.com
+email: guotenghu@gmail.com
 
 # ---------------- #
 #    Navigation    #
