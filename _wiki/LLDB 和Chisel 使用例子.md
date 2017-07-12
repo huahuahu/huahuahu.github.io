@@ -1,4 +1,9 @@
-# LLDB 和Chisel 使用例子
+---
+layout: wiki  
+title: LLDB 和Chisel 使用例子  
+categories: tools  
+keywords: lldb  
+---
 ## 打印变量  
 1. 打印数字  
 		
