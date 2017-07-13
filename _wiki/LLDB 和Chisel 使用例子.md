@@ -123,7 +123,24 @@ implement the selector and sets a conditional breakpoint there.
   <expression>; Type: string; Expression to set a breakpoint on, e.g. "-[MyView
   setFrame:]", "+[MyView awesomeClassMethod]" or "-[0xabcd1234 setFrame:]"
 
- 
+
+2. 打印内部变量  
+ 	
+		(lldb) pinternals self
+		(ViewController) $14 = {
+		  _allStrings = 0x000060800005cec0 @"15 elements"
+		  _tableView = 0x00007fd27901fe00
+		  _sectionsArray = nil
+		_collation = nil
+		}
+3. 打印继承关系  
+
+		(lldb) pclass self
+		ViewController
+		   | UIViewController
+		   |    | UIResponder
+		   |    |    | NSObject
+
 ## 其他  
 1. 当前行数和源码  
 	
