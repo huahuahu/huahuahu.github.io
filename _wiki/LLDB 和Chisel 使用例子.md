@@ -96,10 +96,11 @@ keywords: lldb
 
 ## 更新界面  
 在 `Chisel` 中有一个命令，叫做 `caflush`，来渲染。
-
 	
 	(lldb) e (void)[$myView setBackgroundColor:[UIColor blueColor]]
 	(lldb) e (void)[CATransaction flush] //渲染
+
+	
 ## Chisel 的命令  
 1. 非重写方法的符号断点
 
@@ -107,7 +108,7 @@ keywords: lldb
 		Setting a breakpoint at -[UIViewController viewDidAppear:] with condition (void*)object_getClass((id)$rdi) == 0x000000010e2f4d28
 		Breakpoint 1: where = UIKit`-[UIViewController viewDidAppear:], address = 0x000000010e11533c
  
- `MyViewController` 并没有实现这个方法。
+	 `MyViewController` 并没有实现这个方法。
  
  
 	> (lldb) help bmessage
@@ -119,10 +120,7 @@ Set a breakpoint for a selector on a class, even if the class itself doesn't
 override that selector. It walks the hierarchy until it finds a class that does
 implement the selector and sets a conditional breakpoint there.
 
-	> Arguments:
-  <expression>; Type: string; Expression to set a breakpoint on, e.g. "-[MyView
-  setFrame:]", "+[MyView awesomeClassMethod]" or "-[0xabcd1234 setFrame:]"
-
+	> Arguments: <expression>; Type: string; Expression to set a breakpoint on, e.g. "-[MyView  setFrame:]", "+[MyView awesomeClassMethod]" or "-[0xabcd1234 setFrame:]"
 
 2. 打印内部变量  
  	
