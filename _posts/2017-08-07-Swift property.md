@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  swift Properties
+title:  Swift Properties
 categories: swift
 keywords: swift
 ---
